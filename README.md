@@ -40,9 +40,6 @@ A Ai voice assistant that works on both **phone and laptop**, installable direct
 
 
 
-    └── icon-512.png
-```
 
----
 
 Built with ❤️ for Arpit
