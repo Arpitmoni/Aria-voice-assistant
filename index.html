@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="theme-color" content="#00d4ff"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="ARIA"/>
+  <meta name="description" content="ARIA — Your Personal Voice AI Assistant"/>
+
+  <title>ARIA — Voice Assistant</title>
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="./manifest.json"/>
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon" href="./icons/icon-192.png"/>
+  <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg"/>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="./style.css"/>
+</head>
+<body>
+
+<!-- BACKGROUNDS -->
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="brand">AR<span>IA</span></div>
+  <div class="sys-row">
+    <div class="sys-dot"></div>
+    <span class="sys-status" id="sysStatus">ONLINE</span>
+  </div>
+  <div class="topicons">
+    <span class="ticon" onclick="openModal('emailModal')"  title="Email">📧</span>
+    <span class="ticon" onclick="openModal('ticketModal')" title="Tickets">🎫</span>
+    <span class="ticon" id="vIcon" onclick="toggleVoice()" title="Voice toggle">🔊</span>
+  </div>
+</header>
+
+<!-- INSTALL BANNER -->
+<div id="installBanner">
+  <span>📲 Install ARIA on your home screen!</span>
+  <button class="install-btn" id="installBtn">Install</button>
+  <button class="install-dismiss" onclick="document.getElementById('installBanner').classList.remove('show')">✕</button>
+</div>
+
+<!-- CENTER STAGE — ORB -->
+<main class="center-stage">
+  <div class="ring-outer"></div>
+  <div class="ring-mid"></div>
+
+  <div class="orb-wrap" id="orbWrap" onclick="startListening()" role="button" aria-label="Tap to speak">
+    <div class="orb">
+      <div class="orb-p1"></div>
+      <div class="orb-p2"></div>
+      <span class="orb-icon" id="orbIcon">🤖</span>
+    </div>
+  </div>
+
+  <!-- Waveform bars -->
+  <div class="waveform" id="waveform">
+    <div class="wb" style="animation-delay:0s"></div>
+    <div class="wb" style="animation-delay:.05s"></div>
+    <div class="wb" style="animation-delay:.10s"></div>
+    <div class="wb" style="animation-delay:.15s"></div>
+    <div class="wb" style="animation-delay:.20s"></div>
+    <div class="wb" style="animation-delay:.15s"></div>
+    <div class="wb" style="animation-delay:.10s"></div>
+    <div class="wb" style="animation-delay:.05s"></div>
+    <div class="wb" style="animation-delay:0s"></div>
+    <div class="wb" style="animation-delay:.08s"></div>
+    <div class="wb" style="animation-delay:.13s"></div>
+  </div>
+
+  <div class="status-lbl" id="statusLbl">TAP ORB TO SPEAK</div>
+  <div class="tap-hint"   id="tapHint">or type below ↓</div>
+</main>
+
+<!-- TRANSCRIPT + ACTION -->
+<section class="transcript-area">
+  <div class="tbox" id="tbox">
+    <div class="tlabel">ARIA — PERSONAL VOICE ASSISTANT</div>
+    <div id="tcontent" style="color:var(--muted);font-size:13px;">
+      Hello Arpit! I'm ARIA.<br>
+      <span style="font-size:12px;">Tap the orb or type your command.</span>
+    </div>
+  </div>
+  <div id="actionArea"></div>
+</section>
+
+<!-- No mic warning -->
+<div class="nomsg" id="noMicMsg">
+  ⚠️ Microphone not available — please type your command below.
+</div>
+
+<!-- History dots -->
+<div class="hdots" id="hdots"></div>
+
+<!-- BOTTOM CONTROLS -->
+<footer class="controls">
+  <div class="type-row">
+    <input class="tinput" id="tinput"
+      placeholder="Type command... e.g. open youtube"
+      onkeydown="handleKey(event)"
+      autocomplete="off" autocorrect="off" spellcheck="false"/>
+    <button class="sbtn" onclick="sendTyped()" aria-label="Send">➤</button>
+  </div>
+  <div class="chips">
+    <div class="chip" onclick="cmd('open youtube')">▶️ YouTube</div>
+    <div class="chip" onclick="cmd('play Tum Hi Ho')">🎵 Music</div>
+    <div class="chip" onclick="cmd('open whatsapp')">💬 WhatsApp</div>
+    <div class="chip" onclick="cmd('write an email')">✉️ Email</div>
+    <div class="chip" onclick="cmd('book a flight')">✈️ Tickets</div>
+    <div class="chip" onclick="cmd('what can you do')">❓ Help</div>
+  </div>
+</footer>
+
+<!-- ═══ EMAIL MODAL ═══ -->
+<div class="moverlay" id="emailModal">
+  <div class="modal">
+    <h2>✉️ Send Email</h2>
+    <p>Review your email and tap "Open in Mail" to send.</p>
+    <div class="mf">
+      <label>TO (EMAIL ADDRESS)</label>
+      <input type="email" id="eTo" placeholder="recipient@email.com"/>
+    </div>
+    <div class="mf">
+      <label>SUBJECT</label>
+      <input type="text" id="eSubj" placeholder="Email subject..."/>
+    </div>
+    <div class="mf">
+      <label>MESSAGE</label>
+      <textarea id="eBody" placeholder="Your message..."></textarea>
+    </div>
+    <div class="mact">
+      <button class="mbtn cancel" onclick="closeModal('emailModal')">Cancel</button>
+      <button class="mbtn go"     onclick="doEmail()">Open in Mail ➤</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TICKET MODAL ═══ -->
+<div class="moverlay" id="ticketModal">
+  <div class="modal">
+    <h2>🎫 Book Ticket</h2>
+    <p>Choose your ticket type and ARIA will open the booking site.</p>
+    <div class="mf">
+      <label>TICKET TYPE</label>
+      <select id="tType">
+        <option>✈️ Flight</option>
+        <option>🚆 Train</option>
+        <option>🚌 Bus</option>
+        <option>🎬 Movie</option>
+        <option>🎵 Concert</option>
+      </select>
+    </div>
+    <div class="mf">
+      <label>FROM → TO (or EVENT NAME)</label>
+      <input type="text" id="tRoute" placeholder="e.g. Mumbai → Delhi  or  Coldplay Concert"/>
+    </div>
+    <div class="mact">
+      <button class="mbtn cancel" onclick="closeModal('ticketModal')">Cancel</button>
+      <button class="mbtn go"     onclick="doTicket()">Search & Book 🔍</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="./brain.js"></script>
+<script src="./app.js"></script>
+<script>
+  // ── PWA INSTALL PROMPT ──
+  let deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    setTimeout(() => document.getElementById('installBanner').classList.add('show'), 3000);
+  });
+  document.getElementById('installBtn').addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    document.getElementById('installBanner').classList.remove('show');
+    if (outcome === 'accepted') showNotif('🎉', 'ARIA Installed!', 'Find it on your home screen!');
+  });
+</script>
+</body>
+</html>

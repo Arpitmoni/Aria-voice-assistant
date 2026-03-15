@@ -1,0 +1,20 @@
+{
+  "name": "ARIA — Personal Voice Assistant",
+  "short_name": "ARIA",
+  "description": "Your personal AI voice assistant by Arpit",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#04060f",
+  "theme_color": "#00d4ff",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "categories": ["productivity", "utilities"],
+  "shortcuts": [
+    { "name": "Open YouTube", "url": "/index.html?cmd=open+youtube", "description": "Open YouTube" },
+    { "name": "Play Music",   "url": "/index.html?cmd=play+music",   "description": "Play a song" },
+    { "name": "Write Email",  "url": "/index.html?cmd=write+email",  "description": "Write an email" }
+  ]
+}
