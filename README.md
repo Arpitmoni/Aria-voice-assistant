@@ -42,4 +42,4 @@ A Ai voice assistant that works on both **phone and laptop**, installable direct
 
 
 
-Built with ❤️ for Arpit
+Built with ❤️ by Arpit
